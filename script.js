@@ -50,27 +50,27 @@ const dialog = document.querySelector('.project-dialog');
 if (dialog) {
   document.querySelectorAll('.open-project').forEach((button) => {
     button.addEventListener('click', () => {
-      dialog.querySelector('h2').textContent = button.dataset.project;
+      const title = dialog.querySelector('h2');
+      if (title) title.textContent = button.dataset.project || 'Selected project';
       dialog.showModal();
     });
   });
-  
+
   const closeBtn = document.querySelector('.close-dialog');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => dialog.close());
-  }
-  
+  if (closeBtn) closeBtn.addEventListener('click', () => dialog.close());
+
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
   });
 }
 
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
-    if (href !== '#' && document.querySelector(href)) {
-      e.preventDefault();
+// Smooth scroll for internal links
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', function (event) {
+    const targetId = this.getAttribute('href');
+    if (targetId && targetId !== '#' && document.querySelector(targetId)) {
+      event.preventDefault();
+      document.querySelector(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 });
