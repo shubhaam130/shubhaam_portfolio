@@ -1,14 +1,21 @@
 const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-window.addEventListener('load', () => document.querySelector('.loader').classList.add('is-gone'));
+// Loader animation
+window.addEventListener('load', () => {
+  setTimeout(() => document.querySelector('.loader')?.classList.add('is-gone'), 300);
+});
 
 if (motionOK) {
+  // Cursor glow effect
   const glow = document.querySelector('.cursor-glow');
-  window.addEventListener('pointermove', (event) => {
-    glow.style.left = `${event.clientX}px`;
-    glow.style.top = `${event.clientY}px`;
-  });
+  if (glow) {
+    window.addEventListener('pointermove', (event) => {
+      glow.style.left = `${event.clientX}px`;
+      glow.style.top = `${event.clientY}px`;
+    });
+  }
 
+  // 3D tilt effect on cards
   document.querySelectorAll('.tilt-card').forEach((card) => {
     card.addEventListener('pointermove', (event) => {
       const rect = card.getBoundingClientRect();
@@ -19,19 +26,51 @@ if (motionOK) {
     card.addEventListener('pointerleave', () => card.style.transform = '');
   });
 
+  // Scroll reveal animation
   const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      entry.target.animate([{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'forwards' });
+      entry.target.animate(
+        [
+          { opacity: 0, transform: 'translateY(28px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ],
+        { duration: 800, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'forwards' }
+      );
       observer.unobserve(entry.target);
     }
   }), { threshold: .13 });
-  document.querySelectorAll('.reveal').forEach((item) => { item.style.opacity = '0'; observer.observe(item); });
+  document.querySelectorAll('.reveal').forEach((item) => {
+    item.style.opacity = '0';
+    observer.observe(item);
+  });
 }
 
+// Project dialog management
 const dialog = document.querySelector('.project-dialog');
-document.querySelectorAll('.open-project').forEach((button) => button.addEventListener('click', () => {
-  dialog.querySelector('h2').textContent = button.dataset.project;
-  dialog.showModal();
-}));
-document.querySelector('.close-dialog').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+if (dialog) {
+  document.querySelectorAll('.open-project').forEach((button) => {
+    button.addEventListener('click', () => {
+      dialog.querySelector('h2').textContent = button.dataset.project;
+      dialog.showModal();
+    });
+  });
+  
+  const closeBtn = document.querySelector('.close-dialog');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => dialog.close());
+  }
+  
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href !== '#' && document.querySelector(href)) {
+      e.preventDefault();
+    }
+  });
+});
